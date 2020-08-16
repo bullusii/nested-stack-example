@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for Lambda Reader
+
+Globals:
+  Function:
+    Timeout: 10
+
+Parameters:
+  Application:
+    Type: String
+  S3Bucket:
+    Type: String
+
+Resources:
+  LambdaReaderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+        Variables:
+          APP_NAME: !Ref Application
+          S3_BUCKET: !Ref S3Bucket
+      CodeUri: src/
+      Handler: app.lambda_handler
+      Runtime: ruby2.5
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref S3Bucket
+
+Outputs:
+  LambdaReaderFunction:
+    Description: "Reader Lambda Function ARN"
+    Value: !GetAtt LambdaReaderFunction.Arn

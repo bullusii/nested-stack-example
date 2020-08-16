@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  S3BucketNameInput:
+    Type: String
+    Description: 'S3 Bucket Name to be created'
+    Default: <ENTER YOUR S3 BUCKET HERE>
+  ApplicationName:
+    Type: String
+    Description: 'Application Name'
+    Default: 'MyNestedApp'
+  Version:
+    Type: String
+    Default: 'V2.0.0'
+Resources:
+  ## Implicit Dependency on S3 since it requires the bucketname
+  NestedLambdaWriter:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        Application: !Ref ApplicationName
+        S3Bucket: !GetAtt NestedS3.Outputs.BucketName
+        Version: !Ref Version
+      TemplateURL: <REPLACE WITH UPLOAD LOCATION OF LAMBDA-WRITER TEMPLATE>
+      TimeoutInMinutes: 10
+  ## Implicit Dependency on S3 since it requires the bucketname
+  NestedLambdaReader:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        Application: !Ref ApplicationName
+        S3Bucket: !GetAtt NestedS3.Outputs.BucketName
+      TemplateURL: <REPLACE WITH UPLOAD LOCATION OF LAMBDA-READER TEMPLATE>
+      TimeoutInMinutes: 10
+  NestedS3:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        S3BucketName: !Ref S3BucketNameInput
+        Application: !Ref ApplicationName
+      TemplateURL: <REPLACE WITH UPLOAD LOCATION OF S3 TEMPLATE>
+      TimeoutInMinutes: 10
+Outputs:
+  BucketName:
+    Value: !GetAtt NestedS3.Outputs.BucketName
+  BucketArn:
+    Value: !GetAtt NestedS3.Outputs.BucketArn

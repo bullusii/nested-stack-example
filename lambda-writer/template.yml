@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for Lambda Writer
+
+Globals:
+  Function:
+    Timeout: 10
+
+Parameters:
+  Application:
+    Type: String
+  S3Bucket:
+    Type: String
+  Version:
+    Type: String
+
+Resources:
+  LambdaWriterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+        Variables:
+          APP_NAME: !Ref Application
+          S3_BUCKET: !Ref S3Bucket
+          VERSION: !Ref Version
+      CodeUri: src/
+      Handler: app.lambda_handler
+      Runtime: ruby2.5
+      Policies:
+        - S3WritePolicy:
+            BucketName: !Ref S3Bucket
+Outputs:
+  LambdaWriterFunction:
+    Description: "Writer Lambda Function ARN"
+    Value: !GetAtt LambdaWriterFunction.Arn
