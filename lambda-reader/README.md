@@ -11,8 +11,10 @@ sam package --s3-bucket BUCKET --template-file template.yml
 
 COPY the hash output
 DUPLICATE the template.yml > template.package.yml
-PASTE hash for the CodeUri value: s3://BUCKET/HASH
+REPLACE CodeUri value with s3://$BUCKET/$HASH
 
-aws s3 cp template.package.yml s3:LOCATION IN GLOBAL FOR TEMPLATE
+aws s3 cp template.package.yml s3:BUCKET/DESIRED_LOCATION
+
+The desired location above will need to be referenced in the global template for templateURL.
 
 This will be built from the master stack
